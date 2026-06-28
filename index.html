@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FiFARO 2026™ | Premium 2D Football NFT Whitelist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-primary: #050505;
+            --bg-secondary: #0D0E10;
+            --accent-gold: #D4AF37;
+            --accent-blue: #0052FF;
+            --accent-green: #00CC66;
+            --text-light: #FFFFFF;
+            --text-muted: #8A8F9E;
+            --outline-black: #000000;
+            --glass-bg: rgba(13, 14, 16, 0.85);
+            --glass-border: #D4AF37;
+            --sports-font: 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html, body {
+            background-color: var(--bg-primary);
+            color: var(--text-light);
+            font-family: var(--sports-font);
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            position: relative;
+        }
+
+        .stadium-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: none;
+        }
+
+        .cinematic-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-primary);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .intro-sequence-wrapper {
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .intro-line {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            position: absolute;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            width: 100%;
+            text-shadow: 3px 3px 0px var(--outline-black);
+            -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+        }
+
+        .intro-line.line-gold {
+            color: var(--accent-gold);
+            text-shadow: 3px 3px 0px var(--outline-black), 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .intro-line.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .intro-line.exit {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stamp-grid-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            padding: 20px;
+            gap: 20px;
+            z-index: 999;
+        }
+
+        .nft-stamp-card {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 4px solid var(--outline-black);
+            border-radius: 8px;
+            opacity: 0;
+            transform: scale(3);
+            filter: brightness(1.2) contrast(1.1);
+            box-shadow: 5px 5px 0px var(--outline-black);
+        }
+
+        .nft-stamp-card.stamped {
+            animation: stampImpactEffect 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes stampImpactEffect {
+            0% { opacity: 0; transform: scale(3); }
+            70% { opacity: 1; transform: scale(0.9); }
+            100% { opacity: 0.85; transform: scale(1) rotate(var(--random-rotate)); }
+        }
+
+        .enter-action-box {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            margin-top: 30px;
+            z-index: 1001;
+        }
+
+        .enter-action-box.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .btn-premium-enter {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #B3922E 100%);
+            border: 3px solid var(--outline-black);
+            color: var(--bg-primary);
+            padding: 16px 40px;
+            font-size: 1.25rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 4px 4px 0px var(--outline-black), 0 0 20px rgba(212, 175, 55, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-premium-enter:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px var(--outline-black), 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .global-navigation {
+            width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--outline-black);
+        }
+
+        .brand-logo span {
+            color: var(--accent-gold);
+        }
+
+        .nav-links-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-link-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link-item:hover {
+            color: var(--accent-gold);
+        }
+
+        .btn-nav-x {
+            border: 2px solid var(--outline-black);
+            background: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: var(--text-light);
+            box-shadow: 2px 2px 0px var(--outline-black);
+        }
+
+        .hero-viewport-section {
+            padding: 60px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-display-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 15px;
+            text-shadow: 5px 5px 0px var(--outline-black), 0 0 30px rgba(255,255,255,0.05);
+        }
+
+        .hero-display-subtitle {
+            font-size: 1.25rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0px var(--outline-black);
+        }
+
+        .content-section-container {
+            padding: 60px 5%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header-box {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-tagline {
+            color: var(--accent-gold);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .section-main-title {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+            text-shadow: 3px 3px 0px var(--outline-black);
+        }
+
+        .premium-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .about-premium-card {
+            background: var(--glass-bg);
+            border: 3px solid var(--outline-black);
+            padding: 30px 25px;
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 4px 4px 0px var(--outline-black);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .about-premium-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--outline-black);
+            border-color: var(--accent-gold);
+        }
+
+        .card-metric-display {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            line-height: 1;
+            text-shadow: 2px 2px 0px var(--outline-black);
+        }
+
+        .card-headline-text {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .card-description-body {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .whitelist-flow-container {
+            background: var(--bg-secondary);
+            border: 3px solid var(--outline-black);
+            border-radius: 8px;
+            padding: 40px 4%;
+            box-shadow: 6px 6px 0px var(--outline-black);
+        }
+
+        .progress-tracking-box {
+            margin-bottom: 40px;
+        }
+
+        .progress-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 12px;
+            background: var(--bg-primary);
+            border: 2px solid var(--outline-black);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-gold));
+            transition: width 0.4s ease;
+        }
+
+        .tasks-stack-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .task-row-card {
+            background: var(--bg-primary);
+            border: 3px solid var(--outline-black);
+            border-radius: 6px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 2fr 0.8fr;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 3px 3px 0px var(--outline-black);
+        }
+
+        .task-identity-block {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-index-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--outline-black);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 900;
+        }
+
+        .task-row-card.completed .task-index-badge {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .task-title-text {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-action-interactive {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-task-trigger {
+            background: var(--bg-secondary);
+            border: 2px solid var(--outline-black);
+            color: var(--text-light);
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-family: var(--sports-font);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 2px 2px 0px var(--outline-black);
+            transition: all 0.1s ease;
+        }
+
+        .btn-task-trigger:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--outline-black);
+            background: var(--text-light);
+            color: var(--bg-primary);
+        }
+
+        .task-input-field {
+            flex-grow: 1;
+            background: #000000;
+            border: 2px solid var(--outline-black);
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .task-input-field:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .task-status-verification {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .custom-checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .checkbox-switch-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--outline-black);
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-checkbox-wrapper input {
+            display: none;
+        }
+
+        .custom-checkbox-wrapper input:checked + .checkbox-switch-box {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .task-row-card.highlighted-golden-card {
+            background: linear-gradient(135deg, #1C1910 0%, #0D0E10 100%);
+            border-color: var(--accent-gold);
+        }
+
+        .task-row-card.highlighted-golden-card .task-index-badge {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .final-task-badge-label {
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-subtitle-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .wallet-submission-box {
+            border-top: 2px solid var(--outline-black);
+            padding-top: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .wallet-input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .wallet-label-text {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .wallet-input-control {
+            width: 100%;
+            background: #000000;
+            border: 2px solid var(--outline-black);
+            padding: 12px 16px;
+            border-radius: 4px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .wallet-input-control:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .btn-submit-whitelist {
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent-gold) 0%, #B3922E 100%);
+            color: var(--bg-primary);
+            border: 3px solid var(--outline-black);
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 3px 3px 0px var(--outline-black);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.1s ease;
+        }
+
+        .btn-submit-whitelist:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px var(--outline-black);
+        }
+
+        .btn-submit-whitelist:disabled {
+            background: #222;
+            border-color: #444;
+            color: #555;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-feedback-error {
+            background: rgba(255, 51, 51, 0.15);
+            border: 2px solid #FF3333;
+            color: #FF3333;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            display: none;
+            text-transform: uppercase;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .faq-accordion-layout {
+            max-width: 750px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-accordion-card {
+            background: var(--bg-secondary);
+            border: 3px solid var(--outline-black);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0px var(--outline-black);
+        }
+
+        .faq-accordion-card.active {
+            border-color: var(--accent-gold);
+        }
+
+        .faq-trigger-header {
+            width: 100%;
+            padding: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            text-align: left;
+            font-family: var(--sports-font);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .faq-trigger-header i {
+            color: var(--accent-gold);
+            transition: transform 0.2s ease;
+        }
+
+        .faq-accordion-card.active .faq-trigger-header i {
+            transform: rotate(180deg);
+        }
+
+        .faq-collapsible-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .faq-content-inner {
+            padding: 0 20px 20px 20px;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .global-footer-container {
+            background: #020202;
+            border-top: 3px solid var(--outline-black);
+            padding: 40px 5% 30px 5%;
+            text-align: center;
+        }
+
+        .footer-brand-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .footer-brand-title span {
+            color: var(--accent-gold);
+        }
+
+        .footer-metrics-summary {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .btn-footer-social {
+            color: var(--text-light);
+            font-size: 1.3rem;
+            text-decoration: none;
+        }
+
+        .footer-copyright-text {
+            font-size: 0.75rem;
+            color: #444;
+            text-transform: uppercase;
+            margin-top: 25px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .success-overlay-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-overlay-screen.active {
+            display: flex;
+        }
+
+        .success-canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2001;
+        }
+
+        .success-card-content {
+            position: relative;
+            z-index: 2002;
+            max-width: 550px;
+            background: var(--bg-secondary);
+            border: 4px solid var(--outline-black);
+            padding: 40px 30px;
+            border-radius: 8px;
+            box-shadow: 8px 8px 0px var(--outline-black);
+        }
+
+        .success-badge-vector {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-green);
+            border: 3px solid var(--outline-black);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: var(--bg-primary);
+            margin: 0 auto 20px auto;
+            box-shadow: 4px 4px 0px var(--outline-black);
+        }
+
+        .success-main-headline {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            text-shadow: 3px 3px 0px var(--outline-black);
+        }
+
+        .success-sub-headline {
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0px var(--outline-black);
+        }
+
+        .success-narrative-paragraph {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .success-trophy-icon {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-top: 20px;
+            text-shadow: 3px 3px 0px var(--outline-black);
+        }
+
+        @media (max-width: 1024px) {
+            .premium-grid-layout { grid-template-columns: repeat(2, 1fr); }
+            .task-row-card { grid-template-columns: 1fr 1.5fr; gap: 15px; }
+            .task-status-verification { grid-column: span 2; justify-content: flex-start; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links-wrapper { display: none; }
+            .premium-grid-layout { grid-template-columns: 1fr; }
+            .task-row-card { grid-template-columns: 1fr; gap: 12px; }
+            .task-status-verification { grid-column: span 1; }
+            .task-action-interactive { flex-direction: column; align-items: stretch; }
+            .hero-display-title { font-size: 2.8rem; }
+            .section-main-title { font-size: 1.8rem; }
+            .intro-line { font-size: 1.6rem; }
+            .stamp-grid-container { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(6, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas class="stadium-canvas" id="stadiumLightsCanvas"></canvas>
+
+    <div class="cinematic-intro" id="cinematicIntroPortal">
+        <div class="stamp-grid-container" id="stampGridContainer"></div>
+        <div class="intro-sequence-wrapper">
+            <div class="intro-line">FiFARO 2026™</div>
+            <div class="intro-line">48 Nations</div>
+            <div class="intro-line">26 Players Per Nation</div>
+            <div class="intro-line">1,248 Official Football NFTs</div>
+            <div class="intro-line declare-date">July 3, 2026 13:00 UTC</div>
+            <div class="intro-line line-gold">One Ultimate Collection</div>
+        </div>
+        <div class="enter-action-box" id="enterActionBox">
+            <button class="btn-premium-enter" onclick="dismissIntroPortal()">Enter Whitelist</button>
+        </div>
+    </div>
+
+    <div class="app-container" id="mainApplicationContainer">
+        <nav class="global-navigation">
+            <a href="#" class="brand-logo">FiFARO <span>2026™</span></a>
+            <div class="nav-links-wrapper">
+                <a href="#about" class="nav-link-item">About</a>
+                <a href="#whitelist" class="nav-link-item">Whitelist</a>
+                <a href="#faq" class="nav-link-item">FAQ</a>
+                <a href="https://x.com/FiFARO26" target="_blank" class="nav-link-item btn-nav-x">
+                    <i class="fa-brands fa-x-twitter"></i> Follow
+                </a>
+            </div>
+        </nav>
+
+        <header class="hero-viewport-section">
+            <h1 class="hero-display-title">FiFARO 2026™</h1>
+            <p class="hero-display-subtitle">Premium 2D Football NFT Collection</p>
+            <a href="#whitelist" class="btn-premium-enter" style="text-decoration: none;">Access Portal</a>
+        </header>
+
+        <section class="content-section-container" id="about">
+            <div class="section-header-box">
+                <span class="section-tagline">Roster Overview</span>
+                <h2 class="section-main-title">Collection Architecture</h2>
+            </div>
+            <div class="premium-grid-layout">
+                <div class="about-premium-card">
+                    <div class="card-metric-display">48</div>
+                    <h3 class="card-headline-text">Nations</h3>
+                    <p class="card-description-body">Representing global competitive squads matching the major tournament lineup tier structures.</p>
+                </div>
+                <div class="about-premium-card">
+                    <div class="card-metric-display">26</div>
+                    <h3 class="card-headline-text">Players</h3>
+                    <p class="card-description-body">Every individual asset map follows professional profile attributes with bold black outline 2D design styling.</p>
+                </div>
+                <div class="about-premium-card">
+                    <div class="card-metric-display">1,248</div>
+                    <h3 class="card-headline-text">NFTs</h3>
+                    <p class="card-description-body">A fixed production limitation boundary ensuring strict verifiable digital asset item catalog scarcity.</p>
+                </div>
+                <div class="about-premium-card">
+                    <div class="card-metric-display"><i class="fa-solid fa-shirt"></i></div>
+                    <h3 class="card-headline-text">Official Inspiration</h3>
+                    <p class="card-description-body">Curated around team assets and actual tournament team structural counts.</p>
+                </div>
+                <div class="about-premium-card">
+                    <div class="card-metric-display"><i class="fa-solid fa-palette"></i></div>
+                    <h3 class="card-headline-text">Unique Football Collection</h3>
+                    <p class="card-description-body">Clean 2D sports art representations tailored for high impact profile identity setups.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section-container" id="whitelist">
+            <div class="section-header-box">
+                <span class="section-tagline">Registration Framework</span>
+                <h2 class="section-main-title">Whitelist Allocation Portal</h2>
+            </div>
+
+            <div class="whitelist-flow-container">
+                <div class="progress-tracking-box">
+                    <div class="progress-meta-row">
+                        <div>Mandatory Framework Status: <span id="verificationProgressText">0/4 Tasks</span></div>
+                        <div class="progress-percentage-value" id="progressPercentageDisplay">0%</div>
+                    </div>
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progressBarFillElement"></div>
+                    </div>
+                </div>
+
+                <form id="whitelistMainForm" onsubmit="handleFormSubmission(event)">
+                    <div class="tasks-stack-layout">
+                        
+                        <div class="task-row-card" id="taskCard1">
+                            <div class="task-identity-block">
+                                <div class="task-index-badge">1</div>
+                                <div><h4 class="task-title-text">Follow on X</h4></div>
+                            </div>
+                            <div class="task-action-interactive">
+                                <a href="https://x.com/FiFARO26" target="_blank" class="btn-task-trigger" onclick="registerActionClick(1)">
+                                    Follow @FiFARO26
+                                </a>
+                                <input type="text" id="inputXUsername" class="task-input-field" placeholder="Enter X username" oninput="evaluateTaskState(1)">
+                            </div>
+                            <div class="task-status-verification">
+                                <label class="custom-checkbox-wrapper">
+                                    <input type="checkbox" id="checkTask1" disabled>
+                                    <div class="checkbox-switch-box"><i class="fa-solid fa-check"></i></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="task-row-card" id="taskCard2">
+                            <div class="task-identity-block">
+                                <div class="task-index-badge">2</div>
+                                <div><h4 class="task-title-text">Like Pinned Post</h4></div>
+                            </div>
+                            <div class="task-action-interactive">
+                                <a href="https://x.com/FiFARO26" target="_blank" class="btn-task-trigger" onclick="registerActionClick(2)">
+                                    Open Post
+                                </a>
+                            </div>
+                            <div class="task-status-verification">
+                                <label class="custom-checkbox-wrapper" onclick="toggleExplicitCheckbox(2)">
+                                    <input type="checkbox" id="checkTask2">
+                                    <div class="checkbox-switch-box"><i class="fa-solid fa-check"></i></div>
+                                    <span style="margin-left:5px;">I Liked</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="task-row-card" id="taskCard3">
+                            <div class="task-identity-block">
+                                <div class="task-index-badge">3</div>
+                                <div><h4 class="task-title-text">Repost Pinned Post</h4></div>
+                            </div>
+                            <div class="task-action-interactive">
+                                <a href="https://x.com/FiFARO26" target="_blank" class="btn-task-trigger" onclick="registerActionClick(3)">
+                                    Open Post
+                                </a>
+                            </div>
+                            <div class="task-status-verification">
+                                <label class="custom-checkbox-wrapper" onclick="toggleExplicitCheckbox(3)">
+                                    <input type="checkbox" id="checkTask3">
+                                    <div class="checkbox-switch-box"><i class="fa-solid fa-check"></i></div>
+                                    <span style="margin-left:5px;">I Reposted</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="task-row-card" id="taskCard4">
+                            <div class="task-identity-block">
+                                <div class="task-index-badge">4</div>
+                                <div>
+                                    <h4 class="task-title-text">Comment on Pinned</h4>
+                                    <p class="task-subtitle-text">Tag 3 friends + write about project</p>
+                                </div>
+                            </div>
+                            <div class="task-action-interactive">
+                                <a href="https://x.com/FiFARO26" target="_blank" class="btn-task-trigger" onclick="registerActionClick(4)">
+                                    Comment
+                                </a>
+                                <input type="url" id="inputCommentLink" class="task-input-field" placeholder="Paste comment URL" oninput="evaluateTaskState(4)">
+                            </div>
+                            <div class="task-status-verification">
+                                <label class="custom-checkbox-wrapper">
+                                    <input type="checkbox" id="checkTask4" disabled>
+                                    <div class="checkbox-switch-box"><i class="fa-solid fa-check"></i></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="task-row-card highlighted-golden-card" id="taskCard5" style="display: none;">
+                            <div class="task-identity-block">
+                                <div class="task-index-badge">5</div>
+                                <div>
+                                    <div class="final-task-badge-label"><i class="fa-solid fa-trophy"></i> BONUS TASK</div>
+                                    <h4 class="task-title-text" style="color: var(--accent-gold);">Guaranteed Spot Upgrade</h4>
+                                    <p class="task-subtitle-text" style="color: #FFF; font-size:0.75rem;">Complete this task to upgrade your entry into a Guaranteed Spot. Skipping flags your profile for a Random Spot selection lottery alignment.</p>
+                                </div>
+                            </div>
+                            <div class="task-action-interactive">
+                                <a href="https://x.com/intent/tweet?text=Excited%20for%20the%20launch%20of%20@FiFARO26%20-%2048%20Nations,%2026%20Players,%201248%20Total%20Unique%20Football%20NFTs!%20%E2%9A%BD" target="_blank" class="btn-task-trigger" style="background: var(--accent-gold); color: var(--bg-primary);" onclick="registerActionClick(5)">
+                                    Create Post
+                                </a>
+                                <input type="url" id="inputFinalPostLink" class="task-input-field" placeholder="Paste X Post URL" oninput="evaluateTaskState(5)">
+                            </div>
+                            <div class="task-status-verification">
+                                <label class="custom-checkbox-wrapper">
+                                    <input type="checkbox" id="checkTask5" disabled>
+                                    <div class="checkbox-switch-box"><i class="fa-solid fa-check"></i></div>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="wallet-submission-box">
+                        <div class="wallet-input-group">
+                            <label class="wallet-label-text" for="inputWalletAddress">EVM Wallet Address</label>
+                            <input type="text" id="inputWalletAddress" class="wallet-input-control" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$">
+                        </div>
+
+                        <div class="form-feedback-error" id="formErrorFeedbackBox">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorBoxTextDisplay">Verification alert.</span>
+                        </div>
+
+                        <button type="submit" class="btn-submit-whitelist" id="formSubmissionButton">
+                            Submit Whitelist Entry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="content-section-container" id="faq">
+            <div class="section-header-box">
+                <span class="section-tagline">FAQ</span>
+                <h2 class="section-main-title">Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-accordion-layout">
+                <div class="faq-accordion-card">
+                    <button class="faq-trigger-header" onclick="toggleAccordionCard(this)">
+                        <span>What is the difference between GTD and Random allocation?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-collapsible-body">
+                        <div class="faq-content-inner">
+                            Completing the optional post verification card locks down an absolute Guaranteed (GTD) reservation. Skipping that component falls back onto standard profile lottery matching structures.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-accordion-card">
+                    <button class="faq-trigger-header" onclick="toggleAccordionCard(this)">
+                        <span>Which network configurations are accepted?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-collapsible-body">
+                        <div class="faq-content-inner">
+                            Standard Ethereum Virtual Machine string configurations are mandatory. Double-check accuracy parameters prior to sending payload.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="global-footer-container">
+            <div class="footer-brand-title">FiFARO <span>2026™</span></div>
+            <div class="footer-metrics-summary">
+                <div>48 Nations</div>
+                <div>1,248 NFTs</div>
+            </div>
+            <div>
+                <a href="https://x.com/FiFARO26" target="_blank" class="btn-footer-social">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+            </div>
+            <div class="footer-copyright-text">
+                &copy; 2026 FiFARO 2026™. All Rights Reserved.
+            </div>
+        </footer>
+    </div>
+
+    <div class="success-overlay-screen" id="successOverlayPortal">
+        <canvas class="success-canvas-bg" id="confettiParticlesCanvas"></canvas>
+        <div class="success-card-content">
+            <div class="success-badge-vector"><i class="fa-solid fa-check"></i></div>
+            <h2 class="success-main-headline">CONGRATULATIONS</h2>
+            <h3 class="success-sub-headline" id="successAllocationTierBadge">Spot Secured</h3>
+            <p class="success-narrative-paragraph">Your submission has been received successfully.</p>
+            <p class="success-narrative-paragraph">Your links will now be manually verified. If all requirements are valid, your status allocation is confirmed.</p>
+            <p class="success-narrative-paragraph">Thank you for supporting FiFARO 2026™.</p>
+            <i class="fa-solid fa-trophy success-trophy-icon"></i>
+        </div>
+    </div>
+
+    <script>
+        const DEPLOYMENT_WEB_APP_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+
+        const imageAssetsList = [
+            "https://i.ibb.co.com/ymZQyHQX/2.jpg", "https://i.ibb.co.com/gZcs1Hj2/36.jpg",
+            "https://i.ibb.co.com/Kxt386Cm/48.jpg", "https://i.ibb.co.com/hJQ7JbTF/57.jpg",
+            "https://i.ibb.co.com/tMW2JYRN/60.jpg", "https://i.ibb.co.com/BKzNNd35/74.jpg",
+            "https://i.ibb.co.com/3y7HTBP9/79.jpg", "https://i.ibb.co.com/hxvcg3RC/87.jpg",
+            "https://i.ibb.co.com/9Hrcdg2k/110.jpg", "https://i.ibb.co.com/ccZKr1wg/115.jpg",
+            "https://i.ibb.co.com/0VswwdQT/133.jpg", "https://i.ibb.co.com/HTgZHvMs/176.jpg",
+            "https://i.ibb.co.com/RGMCTrmJ/157.jpg", "https://i.ibb.co.com/JwCDghWY/167.jpg",
+            "https://i.ibb.co.com/Txfjsm8b/163.jpg", "https://i.ibb.co.com/JWn2pcYj/193.jpg",
+            "https://i.ibb.co.com/27twZkJR/218.jpg", "https://i.ibb.co.com/m5vG7Dg5/247.jpg",
+            "https://i.ibb.co.com/xqv8rpfH/307.jpg", "https://i.ibb.co.com/6JDtJ54N/348.jpg"
+        ];
+
+        const introLinesArray = document.querySelectorAll('.intro-line');
+        const stampGridContainer = document.getElementById('stampGridContainer');
+        const enterActionBox = document.getElementById('enterActionBox');
+        let currentSequenceIndex = 0;
+
+        function runIntroSequenceLoop() {
+            if (currentSequenceIndex < introLinesArray.length) {
+                if (currentSequenceIndex > 0) {
+                    introLinesArray[currentSequenceIndex - 1].classList.remove('active');
+                    introLinesArray[currentSequenceIndex - 1].classList.add('exit');
+                }
+                introLinesArray[currentSequenceIndex].classList.add('active');
+                currentSequenceIndex++;
+                setTimeout(runIntroSequenceLoop, 1400);
+            } else {
+                introLinesArray[introLinesArray.length - 1].classList.remove('active');
+                introLinesArray[introLinesArray.length - 1].classList.add('exit');
+                triggerNftStampPatternSequence();
+            }
+        }
+
+        function triggerNftStampPatternSequence() {
+            const shuffledImageUrls = [...imageAssetsList].sort(() => 0.5 - Math.random());
+            const structuralCardCount = Math.min(shuffledImageUrls.length, 20);
+
+            for (let i = 0; i < structuralCardCount; i++) {
+                const imgElement = document.createElement('img');
+                imgElement.src = shuffledImageUrls[i];
+                imgElement.className = 'nft-stamp-card';
+                
+                const randomAngleRotation = (Math.random() * 24 - 12) + 'deg';
+                imgElement.style.setProperty('--random-rotate', randomAngleRotation);
+                
+                stampGridContainer.appendChild(imgElement);
+
+                setTimeout(() => {
+                    imgElement.classList.add('stamped');
+                }, i * 150);
+            }
+
+            setTimeout(() => {
+                enterActionBox.classList.add('visible');
+            }, (structuralCardCount * 150) + 200);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            runIntroSequenceLoop();
+            initiateStadiumBackgroundEngine();
+        });
+
+        function dismissIntroPortal() {
+            const portal = document.getElementById('cinematicIntroPortal');
+            portal.style.transition = 'opacity 0.6s ease';
+            portal.style.opacity = '0';
+            setTimeout(() => {
+                portal.style.display = 'none';
+                document.getElementById('mainApplicationContainer').style.display = 'block';
+            }, 600);
+        }
+
+        const stadiumLightsCanvas = document.getElementById('stadiumLightsCanvas');
+        const canvasGraphicsContext = stadiumLightsCanvas.getContext('2d');
+        let arrayParticleClusters = [];
+        let lightSweepAngleTracker = 0;
+
+        function initiateStadiumBackgroundEngine() {
+            resizeStadiumCanvasDimensions();
+            window.addEventListener('resize', resizeStadiumCanvasDimensions);
+
+            for (let i = 0; i < 40; i++) {
+                arrayParticleClusters.push({
+                    coordinateX: Math.random() * stadiumLightsCanvas.width,
+                    coordinateY: Math.random() * stadiumLightsCanvas.height,
+                    particleRadius: Math.random() * 1.5 + 0.5,
+                    opacityValue: Math.random() * 0.4 + 0.1,
+                    speedY: -(Math.random() * 0.3 + 0.1)
+                });
+            }
+            renderStadiumAtmosphereFrame();
+        }
+
+        function resizeStadiumCanvasDimensions() {
+            stadiumLightsCanvas.width = window.innerWidth;
+            stadiumLightsCanvas.height = window.innerHeight;
+        }
+
+        function renderStadiumAtmosphereFrame() {
+            canvasGraphicsContext.clearRect(0, 0, stadiumLightsCanvas.width, stadiumLightsCanvas.height);
+            canvasGraphicsContext.fillStyle = '#050505';
+            canvasGraphicsContext.fillRect(0, 0, stadiumLightsCanvas.width, stadiumLightsCanvas.height);
+
+            lightSweepAngleTracker += 0.004;
+            let centerPointX = stadiumLightsCanvas.width / 2;
+            let beamOffset = Math.sin(lightSweepAngleTracker) * (stadiumLightsCanvas.width * 0.25);
+
+            drawSpotlightBeam(centerPointX, 0, centerPointX + beamOffset, stadiumLightsCanvas.height, 'rgba(214, 175, 87, 0.06)');
+
+            for (let i = 0; i < arrayParticleClusters.length; i++) {
+                let p = arrayParticleClusters[i];
+                canvasGraphicsContext.beginPath();
+                canvasGraphicsContext.arc(p.coordinateX, p.coordinateY, p.particleRadius, 0, Math.PI * 2);
+                canvasGraphicsContext.fillStyle = `rgba(255, 255, 255, ${p.opacityValue})`;
+                canvasGraphicsContext.fill();
+
+                p.coordinateY += p.speedY;
+                if (p.coordinateY < 0) {
+                    p.coordinateY = stadiumLightsCanvas.height;
+                    p.coordinateX = Math.random() * stadiumLightsCanvas.width;
+                }
+            }
+            requestAnimationFrame(renderStadiumAtmosphereFrame);
+        }
+
+        function drawSpotlightBeam(originX, originY, targetX, targetY, beamColorStr) {
+            canvasGraphicsContext.save();
+            let grad = canvasGraphicsContext.createLinearGradient(originX, originY, targetX, targetY);
+            grad.addColorStop(0, beamColorStr);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            canvasGraphicsContext.beginPath();
+            canvasGraphicsContext.moveTo(originX - 20, originY);
+            canvasGraphicsContext.lineTo(originX + 20, originY);
+            canvasGraphicsContext.lineTo(targetX + 100, targetY);
+            canvasGraphicsContext.lineTo(targetX - 100, targetY);
+            canvasGraphicsContext.closePath();
+            canvasGraphicsContext.fillStyle = grad;
+            canvasGraphicsContext.fill();
+            canvasGraphicsContext.restore();
+        }
+
+        let taskInteractFlags = { 1: false, 2: false, 3: false, 4: false, 5: false };
+
+        function registerActionClick(taskId) {
+            taskInteractFlags[taskId] = true;
+            evaluateTaskState(taskId);
+        }
+
+        function toggleExplicitCheckbox(taskId) {
+            const checkElement = document.getElementById(`checkTask${taskId}`);
+            if (!taskInteractFlags[taskId]) {
+                checkElement.checked = false;
+                displayValidationError("Please execute the designated action step first.");
+                return;
+            }
+            evaluateTaskState(taskId);
+        }
+
+        function evaluateTaskState(taskId) {
+            const cardElement = document.getElementById(`taskCard${taskId}`);
+            const checkElement = document.getElementById(`checkTask${taskId}`);
+            let isTaskVerified = false;
+
+            if (taskId === 1) {
+                if (document.getElementById('inputXUsername').value.trim().length > 1) isTaskVerified = true;
+            } else if (taskId === 2 || taskId === 3) {
+                if (taskInteractFlags[taskId] && checkElement.checked) isTaskVerified = true;
+            } else if (taskId === 4) {
+                const urlVal = document.getElementById('inputCommentLink').value.trim();
+                if (urlVal.startsWith('http')) isTaskVerified = true;
+            } else if (taskId === 5) {
+                const finalUrl = document.getElementById('inputFinalPostLink').value.trim();
+                if (finalUrl.startsWith('http')) isTaskVerified = true;
+            }
+
+            if (isTaskVerified) {
+                checkElement.checked = true;
+                cardElement.classList.add('completed');
+            } else {
+                if (taskId !== 2 && taskId !== 3) checkElement.checked = false;
+                cardElement.classList.remove('completed');
+            }
+            recalculateGlobalProgressMetrics();
+        }
+
+        function recalculateGlobalProgressMetrics() {
+            let coreCompletedCount = 0;
+            for (let id = 1; id <= 4; id++) {
+                if (document.getElementById(`checkTask${id}`).checked) coreCompletedCount++;
+            }
+
+            let computedPct = coreCompletedCount * 25;
+            document.getElementById('verificationProgressText').innerText = `${coreCompletedCount}/4 Tasks`;
+            document.getElementById('progressPercentageDisplay').innerText = `${computedPct}%`;
+            document.getElementById('progressBarFillElement').style.width = `${computedPct}%`;
+        }
+
+        document.getElementById('inputWalletAddress').addEventListener('input', function() {
+            const pattern = /^0x[a-fA-F0-9]{40}$/;
+            const bonusCard = document.getElementById('taskCard5');
+            if (pattern.test(this.value.trim())) {
+                bonusCard.style.display = 'grid';
+                bonusCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                bonusCard.style.display = 'none';
+            }
+        });
+
+        function toggleAccordionCard(btn) {
+            const card = btn.parentElement;
+            const body = card.querySelector('.faq-collapsible-body');
+            if (card.classList.contains('active')) {
+                body.style.maxHeight = null;
+                card.classList.remove('active');
+            } else {
+                card.classList.add('active');
+                body.style.maxHeight = body.scrollHeight + "px";
+            }
+        }
+
+        function displayValidationError(msg) {
+            const errBox = document.getElementById('formErrorFeedbackBox');
+            document.getElementById('errorBoxTextDisplay').innerText = msg;
+            errBox.style.display = 'flex';
+        }
+
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            document.getElementById('formErrorFeedbackBox').style.display = 'none';
+
+            for (let id = 1; id <= 4; id++) {
+                if (!document.getElementById(`checkTask${id}`).checked) {
+                    displayValidationError(`Required task ${id} is missing completion markers.`);
+                    return;
+                }
+            }
+
+            const wAddress = document.getElementById('inputWalletAddress').value.trim();
+            if (!/^0x[a-fA-F0-9]{40}$/.test(wAddress)) {
+                displayValidationError("EVM wallet parsing constraint failure.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('formSubmissionButton');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing Roster...";
+
+            const isOptionalCompleted = document.getElementById('checkTask5').checked;
+            const targetTierLabel = isOptionalCompleted ? "Guaranteed Spot Secured" : "Random Spot Registered";
+
+            const payload = {
+                username: document.getElementById('inputXUsername').value.trim(),
+                liked: document.getElementById('checkTask2').checked ? "YES" : "NO",
+                reposted: document.getElementById('checkTask3').checked ? "YES" : "NO",
+                commentLink: document.getElementById('inputCommentLink').value.trim(),
+                wallet: wAddress,
+                finalPostLink: isOptionalCompleted ? document.getElementById('inputFinalPostLink').value.trim() : "SKIPPED",
+                browser: navigator.userAgent,
+                device: navigator.platform
+            };
+
+            if (DEPLOYMENT_WEB_APP_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+                document.getElementById('successAllocationTierBadge').innerText = targetTierLabel;
+                triggerCelebrationSuccessScreen();
+                return;
+            }
+
+            const formParams = new URLSearchParams();
+            for (const key in payload) formParams.append(key, payload[key]);
+
+            fetch(DEPLOYMENT_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formParams.toString()
+            })
+            .then(() => {
+                document.getElementById('successAllocationTierBadge').innerText = targetTierLabel;
+                triggerCelebrationSuccessScreen();
+            })
+            .catch(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Whitelist Entry";
+                displayValidationError("Database communication error. Retry configuration.");
+            });
+        }
+
+        let successConfettiCanvas = document.getElementById('confettiParticlesCanvas');
+        let successCtx = successConfettiCanvas.getContext('2d');
+        let arrayConfettiPool = [];
+
+        function triggerCelebrationSuccessScreen() {
+            document.getElementById('successOverlayPortal').classList.add('active');
+            successConfettiCanvas.width = window.innerWidth;
+            successConfettiCanvas.height = window.innerHeight;
+
+            for (let i = 0; i < 80; i++) {
+                arrayConfettiPool.push({
+                    x: Math.random() * successConfettiCanvas.width,
+                    y: Math.random() * successConfettiCanvas.height - successConfettiCanvas.height,
+                    r: Math.random() * 3 + 2,
+                    c: ['#D4AF37', '#0052FF', '#FFFFFF'][Math.floor(Math.random() * 3)],
+                    vy: Math.random() * 2 + 2,
+                    vx: Math.random() * 2 - 1
+                });
+            }
+            animateCelebrationConfettiLoop();
+        }
+
+        function animateCelebrationConfettiLoop() {
+            successCtx.clearRect(0, 0, successConfettiCanvas.width, successConfettiCanvas.height);
+            for (let i = 0; i < arrayConfettiPool.length; i++) {
+                let piece = arrayConfettiPool[i];
+                successCtx.beginPath();
+                successCtx.arc(piece.x, piece.y, piece.r, 0, Math.PI * 2);
+                successCtx.fillStyle = piece.c;
+                successCtx.fill();
+                piece.y += piece.vy;
+                piece.x += piece.vx;
+                if (piece.y > successConfettiCanvas.height) {
+                    piece.y = -10;
+                    piece.x = Math.random() * successConfettiCanvas.width;
+                }
+            }
+            requestAnimationFrame(animateCelebrationConfettiLoop);
+        }
+    </script>
+</body>
+</html>
